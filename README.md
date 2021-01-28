@@ -1,0 +1,1 @@
+# vsf-payment-adyen-api
