@@ -26,8 +26,8 @@ const createQuotePaymentDataKey = (quoteId, ip, isPd = true) => {
 }
 
 const getUserIp = (req) => {
-  return req.headers['x-forwarded-for'] || 
-    req.connection.remoteAddress || 
+  return req.headers['x-forwarded-for'] ||
+    req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     (req.connection.socket ? req.connection.socket.remoteAddress : null);
 }
@@ -107,7 +107,7 @@ module.exports = ({ config, db }) => {
   //         const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
   //         client.addMethods("adyen", function(restClient) {
   //           var module = {};
-      
+
   //         //   module.authorize3ds1 = async function() {
 
   //         //     let userId = null
@@ -119,7 +119,7 @@ module.exports = ({ config, db }) => {
   //         //         console.log(err)
   //         //       }
   //         //     }
-      
+
   //         //     return restClient.post('/adyen/threeDSProcess', {
   //         //       payload: JSON.stringify({
   //         //         quote_id: req.query.quoteId,
@@ -130,11 +130,11 @@ module.exports = ({ config, db }) => {
   //         //     }, '', {
   //         //       'User-Agent': req.headers['user-agent']
   //         //     }).then(response => JSON.parse(response))
-  //         //     .catch(err => { 
+  //         //     .catch(err => {
   //         //       console.log(err)
   //         //       throw err
   //         //      })
-      
+
   //         //   };
 
   //         module.auth3ds1 = async function() {
@@ -167,9 +167,9 @@ module.exports = ({ config, db }) => {
   //             'User-Agent': req.headers['user-agent']
   //           }).then(response => JSON.parse(response))
   //           .catch(err => { throw err })
-    
+
   //         };
-          
+
   //           return module;
   //         });
 
@@ -272,14 +272,16 @@ module.exports = ({ config, db }) => {
           return restClient.post(`/guest-carts/${cartId}/retrieve-adyen-payment-methods`);
         }
       };
-      
+
       return module;
     });
 
     client.adyen
       .methods(req.query.token ? req.query.token : null, req.params.cartId)
       .then(result => {
-        apiStatus(res, result, 200);
+        const jsonRes = JSON.parse(result)
+        const paymentMethods = jsonRes && jsonRes.paymentMethodsResponse && jsonRes.paymentMethodsResponse.paymentMethods || []
+        apiStatus(res, paymentMethods, 200);
       })
       .catch(err => {
         apiStatus(res, err, 500);
@@ -379,7 +381,7 @@ module.exports = ({ config, db }) => {
   //       }, '', {
   //         'User-Agent': req.headers['user-agent']
   //       }).then(response => JSON.parse(response))
-  //       .catch(err => { 
+  //       .catch(err => {
   //         console.log(err)
   //         throw err
   //        })
@@ -501,7 +503,7 @@ module.exports = ({ config, db }) => {
             orderId: req.body.orderId,
             ...(userId ? {customer_id: userId} : {}),
             details: {
-              ...(req.body.challenge 
+              ...(req.body.challenge
                 ? {"threeds2.challengeResult": req.body.fingerprint}
                 : {"threeds2.fingerprint": req.body.fingerprint}
               )
