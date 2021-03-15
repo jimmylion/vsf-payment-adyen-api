@@ -1,0 +1,11 @@
+{
+  "name": "payment-adyen",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "@adyen/api-library": "^7.0.0",
+    "magento2-rest-client": "github:DivanteLtd/magento2-rest-client",
+    "querystring": "^0.2.1"
+  }
+}
